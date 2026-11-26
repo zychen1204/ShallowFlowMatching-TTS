@@ -201,7 +201,10 @@ class TextMelDataset(torch.utils.data.Dataset):
         if os.path.exists(spec_filepath):
             mel = torch.load(spec_filepath)
         else:
-            audio, sr = ta.load(filepath)
+            import soundfile as sf
+            audio, sr = sf.read(filepath, dtype="float32")
+            audio = torch.from_numpy(audio)
+            audio = audio.unsqueeze(0) if audio.ndim == 1 else audio.T
             if sr != self.sample_rate:
                 resampler = ta.transforms.Resample(sr, self.sample_rate)
                 audio = resampler(audio)

@@ -74,7 +74,7 @@ class MatchaTTS(BaseLightningClass):  # 🍵
         self.update_data_statistics(data_statistics)
 
     @torch.inference_mode()
-    def synthesise(self, x, x_lengths, n_timesteps, temperature=1.0, alpha=1.0, solver="euler", spks=None, length_scale=1.0):
+    def synthesise(self, x, x_lengths, n_timesteps, temperature=1.0, solver="euler", spks=None, length_scale=1.0):
         """
         Generates mel-spectrogram from text. Returns:
             1. encoder outputs
@@ -136,7 +136,7 @@ class MatchaTTS(BaseLightningClass):  # 🍵
         encoder_outputs = mu_y[:, :, :y_max_length]
 
         # Generate sample tracing the probability flow
-        decoder_outputs, tp, sigma_p = self.decoder(sfm_params, y_mask, n_timesteps, temperature, alpha, solver, spks, cond=None)
+        decoder_outputs, tp, sigma_p = self.decoder(sfm_params, y_mask, n_timesteps, temperature, solver, spks, cond=None)
 
         return {
             "encoder_outputs": encoder_outputs,

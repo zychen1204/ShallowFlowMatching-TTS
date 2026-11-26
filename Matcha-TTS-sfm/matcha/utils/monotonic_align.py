@@ -78,7 +78,7 @@ def maximum_path_cuda(neg_cent: torch.Tensor, mask: torch.Tensor):
     return path
 
 
-@cuda.jit("void(int32[:,:,:], float32[:,:,:], int32[:], int32[:])")
+@cuda.jit
 def maximum_path_cuda_jit(paths, values, t_ys, t_xs):
     max_neg_val = -1e9
     i = cuda.grid(1)

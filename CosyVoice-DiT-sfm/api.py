@@ -61,7 +61,7 @@ class StableTTSAPI(nn.Module):
         self.supported_languages = self.g2p_mapping.keys()
         
     @ torch.inference_mode()
-    def inference(self, text, ref_audio, language, step, temperature=1.0, alpha=1.0, length_scale=1.0, solver=None, cfg=3.0):
+    def inference(self, text, ref_audio, language, step, temperature=1.0, length_scale=1.0, solver=None, cfg=3.0):
         device = next(self.parameters()).device
         phonemizer = self.g2p_mapping.get(language)
         
@@ -72,7 +72,7 @@ class StableTTSAPI(nn.Module):
         ref_audio = load_and_resample_audio(ref_audio, self.mel_config.sample_rate).to(device)
         ref_audio = self.mel_extractor(ref_audio)
         
-        outputs, tp, sigma_p = self.tts_model.synthesise(text, text_length, step, temperature, alpha, ref_audio, length_scale, solver, cfg)
+        outputs, tp, sigma_p = self.tts_model.synthesise(text, text_length, ref_audio, step, temperature, length_scale, solver, cfg)
         mel_output = outputs['decoder_outputs']
         audio_output = self.vocoder_model(mel_output)
         return audio_output.cpu(), outputs, tp, sigma_p

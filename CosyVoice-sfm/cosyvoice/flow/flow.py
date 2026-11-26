@@ -157,10 +157,9 @@ class MaskedDiffWithXvec(torch.nn.Module):
                   prompt_feat,
                   prompt_feat_len,
                   embedding,
-                  n_timesteps,
-                  temperature,
-                  alpha,
-                  solver):
+                  n_timesteps=10,
+                  temperature=1.0,
+                  solver='euler'):
         assert token.shape[0] == 1
         # xvec projection
         embedding = F.normalize(embedding, dim=1)
@@ -209,7 +208,6 @@ class MaskedDiffWithXvec(torch.nn.Module):
             cond=conds,
             n_timesteps=n_timesteps,
             temperature=temperature, 
-            alpha=alpha,
             solver=solver,
         )
         feat = feat[:, :, mel_len1:]

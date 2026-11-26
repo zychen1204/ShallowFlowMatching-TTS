@@ -1,0 +1,19 @@
+# Virtual environments
+.venv/
+venv/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Training logs, checkpoints, and generated outputs
+Matcha-TTS-sfm/logs/
+Matcha-TTS-sfm/out_compare_50ep/
+*.ckpt
+*.wav
+*tfevents*
+
+# Local reference PDF and notes
+2505.12226v2.pdf
+SFM_CHANGES_COMPARISON.md

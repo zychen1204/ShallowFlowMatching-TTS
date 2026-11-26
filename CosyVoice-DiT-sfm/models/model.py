@@ -26,7 +26,7 @@ class StableTTS(nn.Module):
         self.cfg_dropout = 0.2
 
     @torch.inference_mode()
-    def synthesise(self, x, x_lengths, c, n_timesteps, temperature=1.0, alpha=1.0, length_scale=1.0, solver=None, cfg=1.0):
+    def synthesise(self, x, x_lengths, c, n_timesteps, temperature=1.0, length_scale=1.0, solver=None, cfg=1.0):
 
         x, x_mask = self.encoder(x, c, x_lengths)
 
@@ -40,10 +40,10 @@ class StableTTS(nn.Module):
 
         # Generate sample tracing the probability flow
         if cfg == 1.0:
-            decoder_outputs, tp, sigma_p = self.decoder(sfm_params, y_mask, n_timesteps, temperature, alpha, c, solver)
+            decoder_outputs, tp, sigma_p = self.decoder(sfm_params, y_mask, n_timesteps, temperature, c, solver)
         else:
             cfg_kwargs = {'fake_speaker': self.fake_speaker, 'cfg_strength': cfg}
-            decoder_outputs, tp, sigma_p = self.decoder(sfm_params, y_mask, n_timesteps, temperature, alpha, c, solver, cfg_kwargs)
+            decoder_outputs, tp, sigma_p = self.decoder(sfm_params, y_mask, n_timesteps, temperature, c, solver, cfg_kwargs)
             
         decoder_outputs = decoder_outputs[:, :, :y_max_length]
         return {
