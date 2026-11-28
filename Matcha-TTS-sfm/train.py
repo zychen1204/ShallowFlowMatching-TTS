@@ -1,8 +1,10 @@
 from typing import Any, Dict, List, Optional, Tuple
+import os
 
 import hydra
 import lightning as L
 import rootutils
+import torch
 from lightning import Callback, LightningDataModule, LightningModule, Trainer
 from lightning.pytorch.loggers import Logger
 from omegaconf import DictConfig
@@ -51,6 +53,18 @@ def train(cfg: DictConfig) -> Tuple[Dict[str, Any], Dict[str, Any]]:
 
     log.info(f"Instantiating model <{cfg.model._target_}>")  # pylint: disable=protected-access
     model: LightningModule = hydra.utils.instantiate(cfg.model)
+
+    # 載入官方預訓練權重、重置 proj_sfm、凍結 TextEncoder、微調 ODE
+    pretrained_ckpt = os.environ.get("PRETRAINED_CKPT", "")
+    if pretrained_ckpt:
+        log.info(f"SFM finetune: loading {pretrained_ckpt}, resetting encoder.proj_sfm, freezing TextEncoder")
+        ckpt = torch.load(pretrained_ckpt, map_location="cpu", weights_only=False)
+        sd = {k: v for k, v in ckpt["state_dict"].items() if not k.startswith("encoder.proj_sfm.")}
+        model.load_state_dict(sd, strict=False)
+        for name, param in model.named_parameters():
+            param.requires_grad = name.startswith("encoder.proj_sfm.") or name.startswith("decoder.")
+        model._freeze_text_encoder = True
+        model._sfm_warmup_epochs = int(os.environ.get("SFM_WARMUP_EPOCHS", "5"))
 
     log.info("Instantiating callbacks...")
     callbacks: List[Callback] = utils.instantiate_callbacks(cfg.get("callbacks"))

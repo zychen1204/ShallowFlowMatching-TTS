@@ -9,9 +9,15 @@ __pycache__/
 
 # Training logs, checkpoints, and generated outputs
 Matcha-TTS-sfm/logs/
-Matcha-TTS-sfm/out_compare_50ep/
+Matcha-TTS-sfm/out_compare*/
+StableTTS-sfm/VCTK/
+StableTTS-sfm/checkpoints/
+StableTTS-sfm/filelists/
+StableTTS-sfm/runs/
+StableTTS-sfm/StableTTS-sfm-vctk.pt
 *.ckpt
 *.wav
+*.log
 *tfevents*
 
 # Local reference PDF and notes

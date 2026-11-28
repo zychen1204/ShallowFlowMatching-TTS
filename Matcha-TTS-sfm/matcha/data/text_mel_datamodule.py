@@ -197,7 +197,7 @@ class TextMelDataset(torch.utils.data.Dataset):
         return durs
 
     def get_mel(self, filepath):
-        spec_filepath = filepath.replace(".wav", ".spec.pt")
+        spec_filepath = os.path.splitext(filepath)[0] + ".spec.pt"
         if os.path.exists(spec_filepath):
             mel = torch.load(spec_filepath)
         else:

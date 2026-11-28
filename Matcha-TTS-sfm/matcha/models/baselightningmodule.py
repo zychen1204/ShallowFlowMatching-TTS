@@ -30,9 +30,19 @@ class BaseLightningClass(LightningModule, ABC):
         self.register_buffer("mel_std", torch.tensor(data_statistics["mel_std"]))
 
     def configure_optimizers(self):
-        # Instantiate the optimizer
-        optimizer = self.hparams.optimizer(params=self.parameters())
+        # Instantiate the optimizer (only trainable parameters)
+        params = [p for p in self.parameters() if p.requires_grad]
+        optimizer = self.hparams.optimizer(params=params)
         return {"optimizer": optimizer}
+
+    def on_train_epoch_start(self) -> None:
+        if getattr(self, "_freeze_text_encoder", False):
+            self.encoder.eval()
+            self.encoder.proj_sfm.train()
+            if self.current_epoch < getattr(self, "_sfm_warmup_epochs", 0):
+                self.decoder.eval()
+            else:
+                self.decoder.train()
 
         # # Calculate warmup and total steps
         # total_steps = (
@@ -117,7 +127,18 @@ class BaseLightningClass(LightningModule, ABC):
                 sync_dist=True,
             )
 
-        total_loss = sum(loss_dict.values())
+        if getattr(self, "_freeze_text_encoder", False):
+            if self.current_epoch < getattr(self, "_sfm_warmup_epochs", 0):
+                total_loss = loss_dict["mu_loss"] + loss_dict["t_loss"] + loss_dict["sigma_loss"]
+            else:
+                total_loss = (
+                    loss_dict["fm_loss"]
+                    + loss_dict["mu_loss"]
+                    + loss_dict["t_loss"]
+                    + loss_dict["sigma_loss"]
+                )
+        else:
+            total_loss = sum(loss_dict.values())
         self.log(
             "loss/train",
             total_loss,
@@ -153,7 +174,18 @@ class BaseLightningClass(LightningModule, ABC):
                 sync_dist=True,
             )
 
-        total_loss = sum(loss_dict.values())
+        if getattr(self, "_freeze_text_encoder", False):
+            if self.current_epoch < getattr(self, "_sfm_warmup_epochs", 0):
+                total_loss = loss_dict["mu_loss"] + loss_dict["t_loss"] + loss_dict["sigma_loss"]
+            else:
+                total_loss = (
+                    loss_dict["fm_loss"]
+                    + loss_dict["mu_loss"]
+                    + loss_dict["t_loss"]
+                    + loss_dict["sigma_loss"]
+                )
+        else:
+            total_loss = sum(loss_dict.values())
         self.log(
             "loss/val",
             total_loss,
