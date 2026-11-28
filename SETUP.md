@@ -123,7 +123,7 @@ PYEOF
 
 目前測試的是修改 `proj_sfm` 部分的 loss function 是否可以在時間與品質比原本alpha=1.0，因此載入已有權重與 fine-tune：
 
-- 總共做 30 epoch，可在 [run_all_experiments.sh](run_all_experiments.sh#L23) 更改
+- 總共做 30 epoch，可在 [run_all_experiments.sh(L23)](run_all_experiments.sh#L23) 更改
 
 - `encoder.encoder` 權重凍結
 - `encoder.proj_sfm` 權重隨機化
@@ -133,27 +133,40 @@ PYEOF
 
 ### Matcha-TTS-sfm
 - **載入權重、重置 `encoder.proj_sfm`、設定凍結範圍（只訓練 `encoder.proj_sfm` 與 `decoder`）**：
-  - [Matcha-TTS-sfm/train.py ](Matcha-TTS-sfm/train.py#L57)
+  - [Matcha-TTS-sfm/train.py(L57)](Matcha-TTS-sfm/train.py#L57)
 
 ### StableTTS-sfm
 - **載入權重、重置 `encoder.sfm`、凍結 `TextEncoder`（只訓練 `encoder.sfm` 與 `decoder`）**：
-  - [StableTTS-sfm/train.py ](StableTTS-sfm/train.py#L43)
+  - [StableTTS-sfm/train.py(L43)](StableTTS-sfm/train.py#L43)
 
 
 
 確認已在 `sfm-tts` 環境中（`conda activate sfm-tts`），即可背景一鍵跑完訓練與評測：
 
-修改原論文alpha要跑的範圍(默認1~10): [eval_compare.py](eval_compare.py#L22)
+修改原論文alpha要跑的範圍(默認1~10): [eval_compare.py(L22)](eval_compare.py#L22)
 
 
 一鍵跑fine tune 與 原論文比較
 
-要跑特定實驗參考[run_all_experiments.sh ](run_all_experiments.sh#L11)
+要跑特定實驗參考[run_all_experiments.sh(L11)](run_all_experiments.sh#L11)
 
 ```bash
 bash run_all_experiments.sh 
 ```
 
-輸出位置：[results_matcha_ljs.md](results_matcha_ljs.md)
+輸出位置：[results_matcha_ljs.md](results_matcha_ljs.md)、[results_matcha_vctk.md](results_matcha_vctk.md)、[results_stabletts_vctk.md](results_stabletts_vctk.md)
 
 ---
+
+## 4. 實驗結果總覽（免調 $\alpha$ vs. 原論文 $\alpha = 1.0$）
+
+| 任務 | 系統 | $\tilde{t}_g$ | $\overline{\text{PMOS}}$ $\uparrow$ | UTMOS $\uparrow$ | UTMOSv2 $\uparrow$ | Distill-MOS $\uparrow$ | WER (%) $\downarrow$ | SIM $\uparrow$ |
+| :--- | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| **Matcha + LJS** | Orig ($\alpha=1.0$) | 0.099 | 4.035 | 4.174 | 3.671 | 4.259 | 4.847 | 0.975 |
+| **Matcha + LJS** | **Proposed (無 $\alpha$)** | **0.417** | **4.035** | 4.160 | 3.658 | **4.287** | **3.770** | **0.976** |
+| **Matcha + VCTK** | Orig ($\alpha=1.0$) | 0.104 | 3.561 | 3.973 | 2.871 | 3.839 | 7.627 | 0.930 |
+| **Matcha + VCTK** | **Proposed (無 $\alpha$)** | **0.451** | **3.679** | **4.027** | **3.056** | **3.954** | **2.260** | **0.943** |
+| **StableTTS + VCTK** | Orig ($\alpha=1.0$) | 0.153 | 3.302 | 3.239 | 2.787 | 3.879 | 6.497 | 0.909 |
+| **StableTTS + VCTK** | **Proposed (無 $\alpha$)** | **0.391** | **3.357** | **3.371** | **2.803** | **3.897** | **4.661** | **0.918** |
+
+> 完整 $\alpha = 1.0 \sim 10.0$ 掃描對照表請見：[results_matcha_ljs.md](results_matcha_ljs.md)、[results_matcha_vctk.md](results_matcha_vctk.md)、[results_stabletts_vctk.md](results_stabletts_vctk.md)；核心演算法推導見 [SFM_CORE_CHANGE_EXPLAINED.md](SFM_CORE_CHANGE_EXPLAINED.md)。
