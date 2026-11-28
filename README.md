@@ -168,5 +168,3 @@ bash run_all_experiments.sh
 | **Matcha + VCTK** | **Proposed (無 $\alpha$)** | **0.451** | **3.679** | **4.027** | **3.056** | **3.954** | **2.260** | **0.943** |
 | **StableTTS + VCTK** | Orig ($\alpha=1.0$) | 0.153 | 3.302 | 3.239 | 2.787 | 3.879 | 6.497 | 0.909 |
 | **StableTTS + VCTK** | **Proposed (無 $\alpha$)** | **0.391** | **3.357** | **3.371** | **2.803** | **3.897** | **4.661** | **0.918** |
-
-> 完整 $\alpha = 1.0 \sim 10.0$ 掃描對照表請見：[results_matcha_ljs.md](results_matcha_ljs.md)、[results_matcha_vctk.md](results_matcha_vctk.md)、[results_stabletts_vctk.md](results_stabletts_vctk.md)；核心演算法推導見 [SFM_CORE_CHANGE_EXPLAINED.md](SFM_CORE_CHANGE_EXPLAINED.md)。
